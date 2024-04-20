@@ -9,3 +9,4 @@ COPY schema.graphql ./
 RUN npm run build
 
 ENTRYPOINT ["node", "./build/index.js"]
+EXPOSE 80/tcp
