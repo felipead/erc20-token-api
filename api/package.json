@@ -2,6 +2,8 @@
   "name": "blockchain-api",
   "version": "1.0.0",
   "description": "Blockchain API",
+  "type": "module",
+  "exports": "./index.js",
   "scripts": {
     "build": "tsc --build",
     "clean": "rm -rf ./build",
