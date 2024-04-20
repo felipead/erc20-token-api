@@ -1,0 +1,16 @@
+{
+  "name": "blockchain-api",
+  "version": "1.0.0",
+  "description": "Blockchain API",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "rm -rf ./build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Felipe Dornelas",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
