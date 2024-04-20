@@ -9,7 +9,7 @@
   },
   "author": "Felipe Dornelas <m@felipedornelas.com>",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "typescript": "^5.4.5"
   }
 }
