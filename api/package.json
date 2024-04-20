@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "rm -rf ./build",
-    "test": "tsc --build && ava"
+    "test": "tsc --build && ava",
+    "lint": "eslint . --ext .ts"
   },
   "author": "Felipe Dornelas <m@felipedornelas.com>",
   "license": "MIT",
@@ -14,6 +15,9 @@
   },
   "devDependencies": {
     "@ava/typescript": "^4.1.0",
-    "ava": "^6.1.2"
+    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.0",
+    "ava": "^6.1.2",
+    "eslint": "^8.57.0"
   }
 }
