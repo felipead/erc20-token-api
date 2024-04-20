@@ -5,6 +5,7 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 COPY src/ tsconfig.json ./
+COPY schema.graphql ./
 RUN npm run build
 
 ENTRYPOINT ["node", "./build/index.js"]
