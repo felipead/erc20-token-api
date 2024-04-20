@@ -5,6 +5,7 @@ import { createHandler } from 'graphql-http/lib/use/express'
 import { loadSchemaSync } from '@graphql-tools/load'
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 
+import * as config from './config.js'
 
 const __dirname = import.meta.dirname;
 const schema = loadSchemaSync(join(__dirname, '..', 'schema.graphql'), {
@@ -55,7 +56,6 @@ app.all(
     })
 )
 
-// TODO: load port from environment variable
-app.listen(4000, () => {
-    console.log('Running a GraphQL API server at http://localhost:4000/graphql')
+app.listen(config.GRAPHQL_API_PORT, () => {
+    console.log(`Running GraphQL API server at port ${config.GRAPHQL_API_PORT}`)
 })

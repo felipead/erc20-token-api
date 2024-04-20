@@ -1,5 +1,14 @@
 import { gql, request } from 'graphql-request'
 
+import * as config from './config.js'
+
+
+console.log(`Connecting to the GraphQL API at ${config.GRAPHQL_API_ENDPOINT})`)
+
+// FIXME: we need to wait for the API server to be up and running. We should use long-polling
+//  In the meantime, I am HARDCODING a delay.
+await new Promise(resolve => setTimeout(resolve, 5000))
+
 const FetchERC20TokenInfo = gql`\
 query FetchERC20TokenInfo($tokenAddress: String!) {
     erc20_token_info(token_address: $tokenAddress) {
@@ -32,9 +41,7 @@ interface FetchERC20TokenBalanceResponse {
     }
 }
 
-// TODO: load endpoint from the environment
-const endpoint = 'http://localhost:4000/graphql'
-
+const endpoint = config.GRAPHQL_API_ENDPOINT
 const tokenAddress = '0x0000000000000000000000000000000000001111'
 
 const erc20TokenInfo = await request<FetchERC20TokenInfoResponse>(endpoint, FetchERC20TokenInfo, {
