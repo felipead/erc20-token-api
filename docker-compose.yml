@@ -2,4 +2,9 @@ services:
   api:
     build:
       context: ./api
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile
+
+  client-ts:
+    build:
+      context: ./client-ts
+      dockerfile: Dockerfile
