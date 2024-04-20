@@ -3,8 +3,18 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - "4000:4000"
+    env_file:
+      - api/.env.LOCAL
 
   client-ts:
     build:
       context: ./client-ts
       dockerfile: Dockerfile
+    container_name: client-ts
+    env_file:
+      - client-ts/.env.LOCAL
+    depends_on:
+      - api
