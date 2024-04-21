@@ -2,7 +2,9 @@
 set -e
 
 echo "----------- RELEASE THE KRAKEN -----------"
+echo
 
+echo "----------- starting clef ----------------"
 echo "${CLEF_MASTER_PASSWORD}" | clef \
   --keystore /mount/keystore \
   --configdir /mount/clef \
@@ -12,10 +14,12 @@ echo "${CLEF_MASTER_PASSWORD}" | clef \
   --nousb \
   --suppress-bootwarn &
 
-# FIXME: use a netcat on a clef port or wait for ICP lock to be available
-sleep 20
+while [ ! -S /var/clef/clef.ipc ]; do
+  echo "waiting for the clef IPC socket to be available at ..."
+  sleep 1
+done
 
-echo "------- starting geth ------"
+echo "----------- starting geth ----------------"
 geth --networkid "${CHAIN_ID}" \
   --signer /var/clef/clef.ipc \
   --datadir /mount/datadir/node1 \
@@ -25,4 +29,5 @@ geth --networkid "${CHAIN_ID}" \
   --ipcdisable \
   --http \
   --http.addr "0.0.0.0" \
+  --http.vhosts '*' \
   --http.port 8545

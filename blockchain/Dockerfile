@@ -8,7 +8,11 @@ VOLUME /mount/keystore
 VOLUME /mount/datadir
 
 COPY genesis.json ./
-RUN geth --datadir /mount/datadir/node1 --keystore /mount/keystore --networkid "${CHAIN_ID}" init genesis.json
+RUN geth \
+    --datadir /mount/datadir/node1 \
+    --keystore /mount/keystore \
+    --networkid "${CHAIN_ID}" \
+    init genesis.json
 
 RUN mkdir -p /var/clef
 
