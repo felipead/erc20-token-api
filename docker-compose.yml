@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   blockchain:
     container_name: blockchain
@@ -13,6 +15,10 @@ services:
       - "./blockchain/datadir:/mount/datadir"
     env_file:
       - ./blockchain/.env
+    networks:
+      blockchain-network:
+        aliases:
+          - blockchain
 
   api:
     container_name: api
@@ -24,6 +30,13 @@ services:
       - "4000:80"
     env_file:
       - ./api/.env.DOCKER
+    depends_on:
+      - blockchain
+    networks:
+      blockchain-network:
+      api-network:
+        aliases:
+          - api
 
   client-ts:
     build:
@@ -34,3 +47,13 @@ services:
       - ./client-ts/.env.DOCKER
     depends_on:
       - api
+    networks:
+      - api-network
+
+networks:
+  blockchain-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.254.0/28
+  api-network:
