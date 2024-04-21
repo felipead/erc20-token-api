@@ -13,13 +13,13 @@ echo "${CLEF_MASTER_PASSWORD}" | clef \
   --suppress-bootwarn &
 
 # FIXME: use a netcat on a clef port or wait for ICP lock to be available
-sleep 3
+sleep 20
 
 echo "------- starting geth ------"
-geth \
-  --networkid "${CHAIN_ID}" \
-  --datadir /mount/datadir/node1 \
+geth --networkid "${CHAIN_ID}" \
   --signer /var/clef/clef.ipc \
+  --datadir /mount/datadir/node1 \
+  --keystore /mount/keystore \
   --syncmode "full" \
   --nodiscover \
   --ipcdisable \
