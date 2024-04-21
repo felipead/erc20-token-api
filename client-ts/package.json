@@ -8,7 +8,8 @@
     "build": "tsc --build",
     "clean": "rm -rf ./build",
     "test": "tsc --build && ava",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "local-client": "npm run build && npx dotenvx run --env-file=.env.LOCAL -- node build/index.js"
   },
   "author": "Felipe Dornelas <m@felipedornelas.com>",
   "license": "MIT",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@ava/typescript": "^4.1.0",
+    "@dotenvx/dotenvx": "^0.35.1",
     "@types/node": "^20.12.7",
     "@typescript-eslint/eslint-plugin": "^7.7.0",
     "@typescript-eslint/parser": "^7.7.0",
