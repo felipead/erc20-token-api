@@ -29,5 +29,5 @@ geth --networkid "${CHAIN_ID}" \
   --ipcdisable \
   --http \
   --http.addr "0.0.0.0" \
-  --http.vhosts '*' \
+  --http.vhosts "${GETH_HTTP_VHOSTS}" \
   --http.port 8545

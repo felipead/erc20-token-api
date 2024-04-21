@@ -3,6 +3,10 @@ FROM ethereum/client-go:alltools-release-1.13
 ENV CHAIN_ID 21
 ENV CLEF_MASTER_PASSWORD please-load-the-master-password-in-the-environment
 
+# configure the --http.vhosts option for geth
+# for security reasons, we should NOT wildcard it using '*'
+ENV GETH_HTTP_VHOSTS blockchain
+
 VOLUME /mount/clef
 VOLUME /mount/keystore
 VOLUME /mount/datadir
