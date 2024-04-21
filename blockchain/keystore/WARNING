@@ -5,6 +5,8 @@ The key file was included in this repository **for testing purposes only**.
 
 *********** YOU SHOULD NEVER COMMIT REAL SECRETS TO ANY REPOSITORY! ***********
 
+*********** PLEASE NEVER USE THIS PASSWORD IN A REAL LIFE SCENARIO! ***********
+
 ---
 
 This key file was generated using:
@@ -18,5 +20,3 @@ with password:
 having address:
 
     0xEf2A0047b5a85bE08e7A8d69ED03A509238759DE
-
-*********** PLEASE NEVER USE THIS PASSWORD IN A REAL LIFE SCENARIO! ***********

@@ -8,6 +8,8 @@ You should treat masterseed.json with utmost secrecy and make a backup of it!
 * The password is necessary but not enough, you need to back up the master seed too!
 * The master seed does not contain your accounts, those need to be backed up separately!
 
+*********** PLEASE NEVER USE THIS PASSWORD IN A REAL LIFE SCENARIO! ***********
+
 ---
 
 This masterseed.json file was generated using:
@@ -17,5 +19,3 @@ This masterseed.json file was generated using:
 with password:
 
     ahJ0ieth*ah*l8shied9cheephaiCee8o
-
-*********** PLEASE NEVER USE THIS PASSWORD IN A REAL LIFE SCENARIO! ***********
