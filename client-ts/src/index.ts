@@ -7,7 +7,7 @@ console.log(`Connecting to the GraphQL API at ${config.GRAPHQL_API_ENDPOINT})`)
 
 // FIXME: we need to wait for the API server to be up and running. We should use long-polling
 //  In the meantime, I am HARDCODING a delay.
-await new Promise(resolve => setTimeout(resolve, 5000))
+await new Promise(resolve => setTimeout(resolve, 30000))
 
 const FetchERC20TokenInfo = gql`\
 query FetchERC20TokenInfo($tokenAddress: String!) {
