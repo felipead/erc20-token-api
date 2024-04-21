@@ -3,8 +3,14 @@
 import ERC20TokenABI from './erc20/abi.json' assert { type: 'json' }
 import { Web3 } from 'web3'
 
+console.log(`Connecting to geth at ${config.ETHEREUM_BLOCKCHAIN_ENDPOINT})`)
+
+// FIXME: we need to wait for the API server to be up and running. We should use long-polling
+//  In the meantime, I am HARDCODING a delay.
+await new Promise(resolve => setTimeout(resolve, 5000))
+
 const tokenAddress = '0x0000000000000000000000000000000000001111'
-const provider = new Web3.providers.HttpProvider('http://localhost:8545')
+const provider = new Web3.providers.HttpProvider(config.ETHEREUM_BLOCKCHAIN_ENDPOINT)
 const web3 = new Web3(provider)
 const token = new web3.eth.Contract(ERC20TokenABI, tokenAddress)
 

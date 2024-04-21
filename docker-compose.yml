@@ -1,4 +1,19 @@
 services:
+  blockchain:
+    container_name: blockchain
+    hostname: blockchain
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    ports:
+      - "8545:8545"
+    volumes:
+      - "./blockchain/clef:/mount/clef"
+      - "./blockchain/keystore:/mount/keystore"
+      - "./blockchain/datadir:/mount/datadir"
+    env_file:
+      - ./blockchain/.env
+
   api:
     container_name: api
     hostname: api
@@ -8,7 +23,7 @@ services:
     ports:
       - "4000:80"
     env_file:
-      - api/.env.DOCKER
+      - ./api/.env.DOCKER
 
   client-ts:
     build:
@@ -16,6 +31,6 @@ services:
       dockerfile: Dockerfile
     container_name: client-ts
     env_file:
-      - client-ts/.env.DOCKER
+      - ./client-ts/.env.DOCKER
     depends_on:
       - api
