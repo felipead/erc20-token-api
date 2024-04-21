@@ -29,7 +29,8 @@ services:
     env_file:
       - ./api/.env.DOCKER
     depends_on:
-      - blockchain
+      blockchain:
+        condition: service_healthy
     networks:
       blockchain-network:
       api-network:

@@ -26,3 +26,6 @@ RUN chmod +x /usr/entrypoint.sh
 ENTRYPOINT /usr/entrypoint.sh
 
 EXPOSE 8545/tcp
+
+HEALTHCHECK --interval=2s --timeout=180s --start-period=10s \
+    CMD netstat -altn | grep '.8545' > /dev/null; if [ 0 != $? ]; then exit 1; fi;
