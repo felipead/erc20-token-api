@@ -1,0 +1,20 @@
+For the purposes of this exercise, we already generated a clef masterkey.
+The masterkey.json was included in this repository **for testing purposes only**.
+
+*********** YOU SHOULD NEVER COMMIT REAL SECRETS TO ANY REPOSITORY! ***********
+
+You should treat masterseed.json with utmost secrecy and make a backup of it!
+* The password is necessary but not enough, you need to back up the master seed too!
+* The master seed does not contain your accounts, those need to be backed up separately!
+
+---
+
+This masterseed.json file was generated using:
+
+    $ clef --configdir ./clef --chainid 21 --suppress-bootwarn init
+
+with password:
+
+    ahJ0ieth*ah*l8shied9cheephaiCee8o
+
+*********** PLEASE NEVER USE THIS PASSWORD IN A REAL LIFE SCENARIO! ***********
