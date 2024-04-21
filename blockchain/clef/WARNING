@@ -11,7 +11,7 @@ You should treat masterseed.json with utmost secrecy and make a backup of it!
 
 This masterseed.json file was generated using:
 
-    $ clef --configdir ./clef --chainid 21 --suppress-bootwarn init
+    $ clef --configdir ./clef --suppress-bootwarn init
 
 with password:
 
