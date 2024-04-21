@@ -1,4 +1,25 @@
+// -- Connect to geth and make some sample queries -------------------------
+
+import ERC20TokenABI from './erc20/abi.json' assert { type: 'json' }
+import { Web3 } from 'web3'
+
+const tokenAddress = '0x0000000000000000000000000000000000001111'
+const provider = new Web3.providers.HttpProvider('http://localhost:8545')
+const web3 = new Web3(provider)
+const token = new web3.eth.Contract(ERC20TokenABI, tokenAddress)
+
+console.log(`Token name: ${await token.methods.name().call()}`)
+console.log(`Token symbol: ${await token.methods.symbol().call()}`)
+console.log(`Token decimals: ${await token.methods.decimals().call()}`)
+console.log(`Token total-supply: ${await token.methods.totalSupply().call()}`)
+console.log(`Address 0x50182c9e2756Fc816939869c8F16329085F7369e balance: ${await token.methods.balanceOf('0x50182c9e2756Fc816939869c8F16329085F7369e').call()}`)
+console.log(`Address 0xF0BfC9C28f5a2E3D859E634D5B37d0e3b8E272A9 balance: ${await token.methods.balanceOf('0xF0BfC9C28f5a2E3D859E634D5B37d0e3b8E272A9').call()}`)
+
+// -- GRAPHQL Server -------------------------------------------------------
+
 import { join } from 'node:path'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
 
 import express from 'express'
 import { createHandler } from 'graphql-http/lib/use/express'
@@ -7,7 +28,8 @@ import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 
 import * as config from './config.js'
 
-const __dirname = import.meta.dirname;
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const schema = loadSchemaSync(join(__dirname, '..', 'schema.graphql'), {
     loaders: [new GraphQLFileLoader()]
 })
