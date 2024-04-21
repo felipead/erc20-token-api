@@ -1,0 +1,22 @@
+For the purposes of this exercise, we already initialized a clef keystore and
+generated an account.
+
+The key file was included in this repository **for testing purposes only**.
+
+*********** YOU SHOULD NEVER COMMIT REAL SECRETS TO ANY REPOSITORY! ***********
+
+---
+
+This key file was generated using:
+
+    $ clef --keystore ./keystore --configdir ./clef --suppress-bootwarn newaccount
+
+with password:
+
+    fee*je1aighae0em2die6giFaakief=ae
+
+having address:
+
+    0xEf2A0047b5a85bE08e7A8d69ED03A509238759DE
+
+*********** PLEASE NEVER USE THIS PASSWORD IN A REAL LIFE SCENARIO! ***********
