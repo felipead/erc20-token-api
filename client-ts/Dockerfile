@@ -4,7 +4,8 @@ WORKDIR /usr/client
 COPY package.json package-lock.json ./
 RUN npm install
 
-COPY src/ tsconfig.json ./
+COPY tsconfig.json ./
+COPY src/ ./
 RUN npm run build
 
 ENTRYPOINT ["node", "./build/index.js"]

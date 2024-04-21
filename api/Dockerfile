@@ -4,8 +4,9 @@ WORKDIR /usr/api
 COPY package.json package-lock.json ./
 RUN npm install
 
-COPY src/ tsconfig.json ./
+COPY tsconfig.json ./
 COPY schema.graphql ./
+COPY src/ ./
 RUN npm run build
 
 ENTRYPOINT ["node", "./build/index.js"]
