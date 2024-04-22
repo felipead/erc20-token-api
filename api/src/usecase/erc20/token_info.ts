@@ -5,7 +5,6 @@ export const fetchTokenInfo = async (tokenAddress: string): Promise<TokenInfo> =
     console.log(`fetching ERC-20 info for token ${tokenAddress} ...`)
 
     const token = new ERC20Token(tokenAddress)
-
     const name = await token.fetchName()
     const symbol = await token.fetchSymbol()
     const decimals = await token.fetchDecimals()
@@ -13,6 +12,6 @@ export const fetchTokenInfo = async (tokenAddress: string): Promise<TokenInfo> =
     return {
         name: name,
         symbol: symbol,
-        decimals: parseInt(decimals.toString()) // FIXME!!!
+        decimals: Number(decimals)
     }
 }
