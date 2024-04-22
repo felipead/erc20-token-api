@@ -11,8 +11,10 @@ const PROVIDER = new Web3.providers.HttpProvider(ENDPOINT)
 const WEB3 = new Web3(PROVIDER)
 
 export class ERC20Token {
-    public readonly address: string
+
     private internal: Contract<ContractAbi>
+
+    public readonly address: string
 
     constructor(address: string) {
         this.address = address
