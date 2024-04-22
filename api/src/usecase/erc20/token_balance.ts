@@ -24,7 +24,7 @@ export const fetchTokenBalances = async (tokenAddress: string, addresses: Array<
 
 export const fetchSingleTokenBalance = async (token: ERC20Token, tokenInfo: TokenInfo, address: string): Promise<TokenBalance> => {
     const balance = await token.fetchBalanceOf(address)
-    const humanReadable = tokenBalanceToHumanReadable(balance, tokenInfo.decimals, tokenInfo.totalSupply)
+    const humanReadable = tokenBalanceToHumanReadable(balance, tokenInfo.decimals)
 
     return {
         address: address,
