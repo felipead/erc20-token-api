@@ -59,11 +59,32 @@ For the purpose of this exercise, we only configured one node, and no miners. If
 
 The blockchain was configured using [clef](https://geth.ethereum.org/docs/tools/clef/introduction). The newest `geth` versions already deprecate the personal account management in favor of `clef`.
 
-### Security considerations
-
 The current setup has many serious security concerns and vulnerabilities, which were not addressed for the sake of this exercise.
 
-TODO
+### `clef` security concerns
+
+For the sake of this exercise, we already initialized an example clef `mastersecret.json` and also a _keystore_ with an account. 
+
+> ⚠️ **WARNING**: the secret files and passwords included in this repository are for testing purposes only, and should NEVER be used in production.
+
+In order for the container to access these files, two Docker volumes are defined:
+
+- `/mount/clef` - for the `masterscret.json`
+- `/mount/keystore` - for the account keys 
+
+> ⚠️ **WARNING**: these volumes must be mounted into a highly-secure encrypted filesystem. Anyone with access to those volumes would be able to subvert accounts and compromise funds in the Blockchain.
+
+We are passing `clef`'s master password as an environment variable. This however, is _not_ the safest approach. There are more secure alternatives, such as Docker secrets, AWS KMS, encrypted files, etc...
+
+See:
+   - https://blog.diogomonica.com//2017/03/27/why-you-shouldnt-use-env-variables-for-secret-data/
+   - https://www.netmeister.org/blog/passing-passwords.html
+
+### `geth` security concerns
+
+We are booting `geth` with `clef` integration. It will serve an RPC API over HTTP. In a production environment, we should be concerned about enabling API authentication using the `--authrpc` options and JWT.
+
+Also, we should encrypt the transport by enabling TLS / SSL. As `geth` does not support SSL natively we could do that using [nginx](https://www.nginx.com). See: https://ethereum.stackexchange.com/questions/26026/how-to-ssl-ethereum-geth-node
 
 ## Performance considerations
 
@@ -83,7 +104,7 @@ The key to the cache would be the token address. We could use an in-memory cache
 
 In the blockchain world, some token methods might consume gas fees. So caching makes sense not only from a performance perspective, but from an economics one.  
 
-However, caching mutable properties can be challenging. For example, we could cache balances. But what if the balance change as a result from a transaction? Detecting these events and invalidating our cache could be tricky.
+However, caching mutable properties can be challenging. For example, we could cache balances. But what if the balance changes as a result of a new transaction? Detecting these events and invalidating our cache could be tricky.
 
 In the case of balances though, it might be the case that the business scenario could tolerate a small delay. We could cache the balances only for a few seconds, quickly invalidating and refreshing the cache after that. 
 
