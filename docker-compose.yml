@@ -45,7 +45,8 @@ services:
     env_file:
       - ./client-ts/.env.DOCKER
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - api-network
 

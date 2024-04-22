@@ -73,6 +73,10 @@ const root = {
 
 const app = express()
 
+app.get('/health', (req, res) => {
+    res.status(200).send('{"health": "ok"}')
+})
+
 app.all(
     '/graphql',
     createHandler({

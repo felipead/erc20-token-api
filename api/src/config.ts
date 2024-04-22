@@ -12,5 +12,5 @@ const requireInt = (key: string): number => {
     return parseInt(value)
 }
 
-export const GRAPHQL_API_PORT = requireInt('API_GRAPHQL_API_PORT')
+export const GRAPHQL_API_PORT = requireInt('GRAPHQL_API_PORT')
 export const ETHEREUM_BLOCKCHAIN_ENDPOINT = requireString('ETHEREUM_BLOCKCHAIN_ENDPOINT')
