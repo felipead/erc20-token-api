@@ -51,6 +51,22 @@ There are two types of errors we need to be concerned about:
 
 Due to lack of time, this was not implemented.
 
+### Testing
+
+Automated testing practices, such as TDD and integration tests, are of the uttermost importance in any production-grade project.
+
+I am a big advocate of automated testing, but due to time constraints I was only able to implement a few unit tests.
+
+For integration testing, we could use a tool like [nock](https://github.com/nock/nock) - which would allow us to stub the JSON-RPC requests and responses sent to the `geth` node as part of our test suite.
+
+### Monitoring
+
+The application should have very clear and descriptive logs, containing unique request UUID identifiers, and entity IDs, which would help troubleshooting.
+
+It should also raise alerts for development and operation teams in case any issue is detected in the blockchain, or in the API features.
+
+The Docker containers implement simple health checks, but that could be extended or improved.
+
 ## The Blockchain
 
 We are running a private Ethereum blockchain using [geth](https://geth.ethereum.org).
