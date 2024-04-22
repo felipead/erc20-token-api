@@ -25,6 +25,7 @@ while [ ! -S /var/clef/clef.ipc ]; do
   echo "waiting for the clef IPC socket to be available ..."
   sleep 1
 done
+sleep 2
 
 echo "----------- starting geth ----------------"
 
