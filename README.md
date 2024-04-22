@@ -90,6 +90,14 @@ Also, we should encrypt the transport by enabling TLS / SSL. As `geth` does not 
 
 The following could be implemented to improve performance and reduce latency:
 
+### `geth` nodes and the `datadir` 
+
+The `datadir` is the directory where `geth` nodes store the [blockchain data](https://geth.ethereum.org/docs/fundamentals/databases) in the filesystem. 
+
+We are building the Blockchain `datadir` inside the container just for the purpose of this exercise. Running a full-fledged production Ethereum node would require a blazing fast SSD with hundreds of Gibabytes available. 
+
+For production, we would probably want to mount the `datadir` as an external Docker volume too.
+
 ### Processing requests in parallel
 
 The API that fetches balances accepts multiple addresses. For each address, we must make a call to the `balanceOf` ERC-20 method. That could imply in huge latency if we were to query many addresses sequentially.
