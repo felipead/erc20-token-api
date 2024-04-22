@@ -11,7 +11,7 @@ services:
       - "./blockchain/clef:/mount/clef"
       - "./blockchain/keystore:/mount/keystore"
     env_file:
-      - ./blockchain/.env
+      - blockchain/.env.DOCKER
     networks:
       blockchain-network:
         aliases:
