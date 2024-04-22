@@ -25,7 +25,7 @@ GraphQL has the following advantages over REST:
 The disadvantages of using GraphQL are:
 
 - It doesn't have a wide support as REST. It is cumbersome to be used with command-line tools (eg: `curl`).
-- It doesn't enforce that HTTP status codes are respected. It also doesn't enforce common status codes. This can make it harder to distinguish user from server errors (eg: `400 Bad Request` vs `500 Internal Server Error`), and also transient errors (eg: `503 Service Unavailable`).
+- It doesn't enforce that HTTP status codes are respected. It also doesn't enforce common status codes. This can make it harder to distinguish user errors from server errors (eg: `400 Bad Request` vs `500 Internal Server Error`), and also transient errors (eg: `503 Service Unavailable`).
 - Because a typical GraphQL API only exposes one `/graphql` URL, it is not straightforward to cache requests as you can by following REST's uniform interface.
 
 ### Validation
@@ -64,6 +64,28 @@ The blockchain was configured using [clef](https://geth.ethereum.org/docs/tools/
 The current setup has many serious security concerns and vulnerabilities, which were not addressed for the sake of this exercise.
 
 TODO
+
+## Performance considerations
+
+The following could be implemented to improve performance and reduce latency:
+
+### Processing requests in parallel
+
+The API that fetches balances accepts multiple addresses. For each address, we must make a call to the `balanceOf` ERC-20 method. That could imply in huge latency if we were to query many addresses sequentially.
+
+We are already fetching balance requests concurrently, using node.js async capabilities.
+
+### Caching
+
+Some ERC-20 methods will never change. For example, the `name()`, `symbol()`, and `decimals()` are expected to stay constant among the entire lifecycle of token in the Blockchain. It makes sense to cache this information.
+
+The key to the cache would be the token address. We could use an in-memory cache with an LRU strategy, or even adopt a distributed cache like [redis](https://redis.io). We could even mix both strategies - check the in-memory cache first, then check redis, in true L1/L2 spirit. 
+
+In the blockchain world, some token methods might consume gas fees. So caching makes sense not only from a performance perspective, but from an economics one.  
+
+However, caching mutable properties can be challenging. For example, we could cache balances. But what if the balance change as a result from a transaction? Detecting these events and invalidating our cache could be tricky.
+
+In the case of balances though, it might be the case that the business scenario could tolerate a small delay. We could cache the balances only for a few seconds, quickly invalidating and refreshing the cache after that. 
 
 ## Availability considerations
 
