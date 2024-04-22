@@ -1,11 +1,11 @@
 
-export type ERC20TokenInfo = {
+export type TokenInfo = {
     name: string
     symbol: string
     decimals: number
 }
 
-export type ERC20TokenBalance = {
+export type TokenBalance = {
     address: string
     balance: string
 }
