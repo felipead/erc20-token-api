@@ -1,5 +1,5 @@
 import { TokenBalance } from '../../model/erc20.js'
-import { ERC20Token } from '../../blockchains/erc20/token.js'
+import { ERC20Token } from '../../blockchain/erc20/token.js'
 
 export const fetchTokenBalances = async (tokenAddress: string, addresses: Array<string>):
     Promise<Array<TokenBalance>> => {

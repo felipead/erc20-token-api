@@ -1,5 +1,5 @@
 import { TokenInfo } from '../../model/erc20.js'
-import { ERC20Token } from '../../blockchains/erc20/token.js'
+import { ERC20Token } from '../../blockchain/erc20/token.js'
 
 export const fetchTokenInfo = async (tokenAddress: string): Promise<TokenInfo> => {
     console.log(`fetching ERC-20 info for token ${tokenAddress} ...`)
