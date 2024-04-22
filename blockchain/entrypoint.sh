@@ -15,14 +15,14 @@ echo "${CLEF_MASTER_PASSWORD}" | clef \
   --suppress-bootwarn &
 
 while [ ! -S /var/clef/clef.ipc ]; do
-  echo "waiting for the clef IPC socket to be available at ..."
+  echo "waiting for the clef IPC socket to be available ..."
   sleep 1
 done
 
 echo "----------- starting geth ----------------"
 geth --networkid "${CHAIN_ID}" \
   --signer /var/clef/clef.ipc \
-  --datadir /mount/datadir/node1 \
+  --datadir /usr/datadir/node1 \
   --keystore /mount/keystore \
   --syncmode "full" \
   --nodiscover \

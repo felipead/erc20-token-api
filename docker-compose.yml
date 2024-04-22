@@ -10,7 +10,6 @@ services:
     volumes:
       - "./blockchain/clef:/mount/clef"
       - "./blockchain/keystore:/mount/keystore"
-      - "./blockchain/datadir:/mount/datadir"
     env_file:
       - ./blockchain/.env
     networks:

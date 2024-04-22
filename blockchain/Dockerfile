@@ -9,11 +9,15 @@ ENV GETH_HTTP_VHOSTS blockchain
 
 VOLUME /mount/clef
 VOLUME /mount/keystore
-VOLUME /mount/datadir
+
+# we are building the datadir inside the container just for the purpose of this exercise
+# running a full-fledge Ethereum node will require a blazing fast SSD with hundreds of Gibabytes available
+# so we would probably want to mount the datadir as a Docker volume too
+RUN mkdir -p /usr/datadir/node1
 
 COPY genesis.json ./
 RUN geth \
-    --datadir /mount/datadir/node1 \
+    --datadir /usr/datadir/node1 \
     --keystore /mount/keystore \
     --networkid "${CHAIN_ID}" \
     init genesis.json
