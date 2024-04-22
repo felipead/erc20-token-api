@@ -43,16 +43,28 @@ export class ERC20Token {
         throw new InvalidERC20CallReturnValueError('symbol')
     }
 
-    public async fetchDecimals(): Promise<bigint> {
+    public async fetchDecimals(): Promise<number> {
         console.info(`fetching ERC-20 decimals() for token ${this.address} ...`)
 
         const decimals= await this.internal.methods.decimals().call()
         if (decimals && typeof decimals === 'bigint') {
-            return decimals
+            return Number(decimals)
         }
 
         console.error(`invalid ERC-20 return value received: ${decimals}`)
         throw new InvalidERC20CallReturnValueError('decimals')
+    }
+
+    public async fetchTotalSupply(): Promise<bigint> {
+        console.info(`fetching ERC-20 totalSupply() for token ${this.address} ...`)
+
+        const totalSupply= await this.internal.methods.totalSupply().call()
+        if (totalSupply && typeof totalSupply === 'bigint') {
+            return totalSupply
+        }
+
+        console.error(`invalid ERC-20 return value received: ${totalSupply}`)
+        throw new InvalidERC20CallReturnValueError('totalSupply')
     }
 
     public async fetchBalanceOf(address: string): Promise<bigint> {

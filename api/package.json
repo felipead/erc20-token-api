@@ -16,6 +16,7 @@
   "dependencies": {
     "@graphql-tools/graphql-file-loader": "^8.0.1",
     "@graphql-tools/load": "^8.0.2",
+    "decimal.js": "^10.4.3",
     "express": "^4.19.2",
     "graphql": "^16.8.1",
     "graphql-http": "^1.22.1",
