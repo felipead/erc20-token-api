@@ -3,6 +3,7 @@ export interface ERC20TokenInfo {
     name: string
     symbol: string
     decimals: number
+    total_supply: string
 }
 
 export interface ERC20TokenInfoResponse {

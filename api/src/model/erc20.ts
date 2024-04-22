@@ -3,7 +3,7 @@ export type TokenInfo = {
     name: string
     symbol: string
     decimals: number
-    total_supply: bigint
+    totalSupply: bigint
 }
 
 export type TokenBalance = {

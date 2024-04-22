@@ -13,12 +13,16 @@ export const fetchInfoFromTokenObject = async (token: ERC20Token): Promise<Token
         name: await token.fetchName(),
         symbol: await token.fetchSymbol(),
         decimals: await token.fetchDecimals(),
-        total_supply: await token.fetchTotalSupply()
+        totalSupply: await token.fetchTotalSupply()
     }
 
+    //
     // TODO: cache token info on the ERC-20 address
-    //   we can use an in-memory cache (eg: object memoization)
-    //   or redis for better availability (considering we might have multiple instances running in production)
+    //   since this information should almost never change, it makes sense to be cached
+    //   to relieve some of the burden on the node
+    //   we can use an in-memory cache (eg: LRU cache or memoization)
+    //   or redis for better availability (considering we might have multiple instances of this server in production)
+    //
 
     return info
 }
