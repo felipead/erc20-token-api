@@ -10,15 +10,16 @@ export const fetchTokenBalances = async (tokenAddress: string, addresses: Array<
     const token = new ERC20Token(tokenAddress)
     const tokenInfo = await fetchInfoFromTokenObject(token)
 
-    const balances = new Array<TokenBalance>(addresses.length)
-    for (const i in addresses) {
-        const address = addresses[i]
-        // TODO: handle errors
-        // TODO: execute request in parallel
-        balances[i] = await fetchSingleTokenBalance(token, tokenInfo, address)
-    }
+    //
+    // By running these requests in parallel, we will greatly reduce latency and also
+    // prevent the main request from timing out.
+    //
 
-    return balances
+    const promises = addresses.map((i) => {
+        return fetchSingleTokenBalance(token, tokenInfo, i)
+    })
+
+    return await Promise.all(promises)
 }
 
 export const fetchSingleTokenBalance = async (token: ERC20Token, tokenInfo: TokenInfo, address: string): Promise<TokenBalance> => {
