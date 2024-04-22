@@ -11,6 +11,8 @@ This API was built using GraphQL. You can read the API schema [here](/api/schema
 
 The API exposes two graphql queries, one for fetching ERC-20 token information, and another for fetching balances from multiple addresses. These queries can be combined per GraphQL capabilities.
 
+Examples on how to query the API can be found [here](/api/examples).
+
 ## GraphQL vs. REST
 
 GraphQL has the following advantages over REST:
