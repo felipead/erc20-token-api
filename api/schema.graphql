@@ -1,6 +1,6 @@
 type Query {
     erc20_token_info(token_address: String!): ERC20TokenInfo
-    erc20_token_balance(token_address: String!, addresses: [String!]!): [ERC20TokenBalance]!
+    erc20_token_balances(token_address: String!, addresses: [String!]!): [ERC20TokenBalance]!
 }
 
 type ERC20TokenInfo {

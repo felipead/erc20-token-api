@@ -20,15 +20,15 @@ interface FetchERC20TokenInfoResponse {
     }
 }
 
-const FetchERC20TokenBalance = gql`\
-query FetchERC20TokenBalance($tokenAddress: String!, $addresses: [String!]!) {
-    erc20_token_balance(token_address: $tokenAddress, addresses: $addresses) {
+const FetchERC20TokenBalances = gql`\
+query FetchERC20TokenBalances($tokenAddress: String!, $addresses: [String!]!) {
+    erc20_token_balances(token_address: $tokenAddress, addresses: $addresses) {
         address
         balance
     }
 }`
 
-interface FetchERC20TokenBalanceResponse {
+interface FetchERC20TokenBalancesResponse {
     erc20_token_info: {
         address: string
         balance: string
@@ -45,11 +45,11 @@ const erc20TokenInfo = await request<FetchERC20TokenInfoResponse>(endpoint, Fetc
 })
 console.log(erc20TokenInfo)
 
-const erc20TokenBalance = await request<FetchERC20TokenBalanceResponse>(endpoint, FetchERC20TokenBalance, {
+const erc20TokenBalances = await request<FetchERC20TokenBalancesResponse>(endpoint, FetchERC20TokenBalances, {
     tokenAddress,
     addresses: [
         '0xD87d2676B8bbd7d4bf7884089356F7BB82158cFe',
         '0xb92f2d4B7aBD0aC3936A757FDb6413aaC03372e6'
     ]
 })
-console.log(erc20TokenBalance)
+console.log(erc20TokenBalances)

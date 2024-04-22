@@ -11,7 +11,7 @@ export const API_RESOLVER = {
         return await fetchERC20TokenInfo(req.token_address)
     },
 
-    async erc20_token_balance(req: ERC20TokenBalanceRequest): Promise<Array<ERC20TokenBalance>> {
+    async erc20_token_balances(req: ERC20TokenBalanceRequest): Promise<Array<ERC20TokenBalance>> {
         console.log(`Fetching ERC20 token balances for ${req.token_address} and ${req.addresses.length} addresses`)
         return await fetchERC20TokenBalances(req.token_address, req.addresses)
     },
