@@ -5,7 +5,6 @@ query='query {
     name
     symbol
     decimals
-    total_supply
   }
 }'
 

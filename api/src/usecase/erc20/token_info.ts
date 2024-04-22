@@ -13,7 +13,6 @@ export const fetchInfoFromTokenObject = async (token: ERC20Token): Promise<Token
         name: await token.fetchName(),
         symbol: await token.fetchSymbol(),
         decimals: await token.fetchDecimals(),
-        totalSupply: await token.fetchTotalSupply()
     }
 
     //

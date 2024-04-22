@@ -6,7 +6,6 @@ query FetchERC20TokenInfo($tokenAddress: String!) {
         name
         symbol
         decimals
-        total_supply
     }
 }`
 

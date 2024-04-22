@@ -8,6 +8,9 @@ import {ERC20TokenBalance, ERC20TokenInfo} from './integrations/blockchain-api/r
 const TOKEN_ADDRESS = '0x0000000000000000000000000000000000001111'
 const USER_ADDRESSES =  USER_ADDRESSES_DATA as IUserAddresses
 
+const precision = 50
+Decimal.set({ precision, rounding: Decimal.ROUND_HALF_UP })
+
 const main = async () => {
     const tokenInfo = await fetchERC20TokenInfo(TOKEN_ADDRESS)
     const allAddresses = getAllAddresses()
@@ -16,7 +19,7 @@ const main = async () => {
     const balancesByAddress = sortBalancesByAddress(allBalances)
 
     for (const address of allAddresses) {
-        displayAddressBalance(tokenInfo, address, balancesByAddress.get(address))
+        displayAddressBalance(tokenInfo, address, balancesByAddress.get(address) as string)
     }
 
     for (const [user, userAddresses] of Object.entries(USER_ADDRESSES)) {
@@ -45,17 +48,11 @@ const sortBalancesByAddress = (allBalances: Array<ERC20TokenBalance>) => {
     return balanceByAddress
 }
 
-const displayAddressBalance = (tokenInfo: ERC20TokenInfo, address: string, balance: string | undefined) => {
-    if (balance) {
-        console.log(`${address}: ${balance} ${tokenInfo.symbol}`)
-    } else {
-        console.log(`${address}: <error>`)
-    }
+const displayAddressBalance = (tokenInfo: ERC20TokenInfo, address: string, balance: string) => {
+    console.log(`${address}: ${balance} ${tokenInfo.symbol}`)
 }
 
 const displayUserBalance = (tokenInfo: ERC20TokenInfo, user: string, totalBalance: Decimal) => {
-    const precision = tokenInfo.total_supply.length + 1
-    Decimal.set({ rounding: Decimal.ROUND_HALF_UP, precision })
     console.log(`${user}: ${totalBalance.toFixed(tokenInfo.decimals)} ${tokenInfo.symbol}`)
 }
 
