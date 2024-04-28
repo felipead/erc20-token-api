@@ -239,6 +239,8 @@ test.serial('fetch ERC-20 token balance for address - fail invalid address forma
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const bogusAddress = '0xaaaaaaaaaaaa'
 
+    // no stubbing is necessary here because address validation happens before calling the JSON-RPC API
+
     const token = new ERC20Token(tokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(bogusAddress))
 
