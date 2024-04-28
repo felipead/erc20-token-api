@@ -4,7 +4,7 @@ import { ErrorType } from '../../error/type.js'
 export abstract class BaseERC20Error extends BaseError {
 }
 
-export class InvalidTokenAddress extends BaseERC20Error {
+export class InvalidERC20TokenAddress extends BaseERC20Error {
     constructor(tokenAddress: string, functionSignature: string, innerError?: Error) {
         const msg = (
             `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
@@ -15,7 +15,7 @@ export class InvalidTokenAddress extends BaseERC20Error {
     }
 }
 
-export class InvalidTokenResult extends BaseERC20Error {
+export class InvalidERC20CallResult extends BaseERC20Error {
     constructor(tokenAddress: string, functionSignature: string, result: unknown) {
         const msg = (
             `The ERC-20 call result is invalid. ` +

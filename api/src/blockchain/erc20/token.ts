@@ -6,8 +6,8 @@ import {
     BaseERC20Error,
     InvalidAddressBalance,
     InvalidAddressFormat,
-    InvalidTokenAddress,
-    InvalidTokenResult
+    InvalidERC20TokenAddress,
+    InvalidERC20CallResult
 } from './error.js'
 import { UnknownError } from '../../error/common.js'
 
@@ -32,7 +32,7 @@ export class ERC20Token {
         if (error instanceof BaseWeb3Error) {
             switch (error.code) {
                 case ERR_ABI_ENCODING:
-                    return new InvalidTokenAddress(this.address, functionSignature, error)
+                    return new InvalidERC20TokenAddress(this.address, functionSignature, error)
                 case ERR_VALIDATION:
                     if (error.message.includes('must pass "address" validation')) {
                         return new InvalidAddressFormat(error)
@@ -62,7 +62,7 @@ export class ERC20Token {
             return result
         }
 
-        throw new InvalidTokenResult(this.address, functionSignature, result)
+        throw new InvalidERC20CallResult(this.address, functionSignature, result)
     }
 
     public async fetchSymbol(): Promise<string> {
@@ -80,7 +80,7 @@ export class ERC20Token {
             return result
         }
 
-        throw new InvalidTokenResult(this.address, functionSignature, result)
+        throw new InvalidERC20CallResult(this.address, functionSignature, result)
     }
 
     public async fetchDecimals(): Promise<number> {
@@ -98,7 +98,7 @@ export class ERC20Token {
             return Number(result)
         }
 
-        throw new InvalidTokenResult(this.address, functionSignature, result)
+        throw new InvalidERC20CallResult(this.address, functionSignature, result)
     }
 
     public async fetchTotalSupply(): Promise<bigint> {
@@ -116,7 +116,7 @@ export class ERC20Token {
             return result
         }
 
-        throw new InvalidTokenResult(this.address, functionSignature, result)
+        throw new InvalidERC20CallResult(this.address, functionSignature, result)
     }
 
     public async fetchBalanceOf(address: string): Promise<bigint> {
@@ -138,6 +138,6 @@ export class ERC20Token {
             return result
         }
 
-        throw new InvalidTokenResult(this.address, functionSignature, result)
+        throw new InvalidERC20CallResult(this.address, functionSignature, result)
     }
 }

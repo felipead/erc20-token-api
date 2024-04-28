@@ -7,7 +7,7 @@ import * as config from '../../../src/config.js'
 import { ERC20Token } from '../../../src/blockchain/erc20/token.js'
 import {
     InvalidAddressBalance, InvalidAddressFormat,
-    InvalidTokenAddress
+    InvalidERC20TokenAddress
 } from '../../../src/blockchain/erc20/error.js'
 
 const ENDPOINT = config.ETHEREUM_BLOCKCHAIN_ENDPOINT
@@ -127,7 +127,7 @@ test.serial('fetch ERC-20 token name - fail token address does not exist', async
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchName())
 
-    t.true(error instanceof InvalidTokenAddress)
+    t.true(error instanceof InvalidERC20TokenAddress)
     t.is(
         error.message,
         `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
@@ -162,7 +162,7 @@ test.serial('fetch ERC-20 token symbol - fail token address does not exist', asy
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchSymbol())
 
-    t.true(error instanceof InvalidTokenAddress)
+    t.true(error instanceof InvalidERC20TokenAddress)
     t.is(
         error.message,
         `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
@@ -197,7 +197,7 @@ test.serial('fetch ERC-20 token decimals - fail token address does not exist', a
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchDecimals())
 
-    t.true(error instanceof InvalidTokenAddress)
+    t.true(error instanceof InvalidERC20TokenAddress)
     t.is(
         error.message,
         `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
@@ -232,7 +232,7 @@ test.serial('fetch ERC-20 token total supply - fail token address does not exist
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchTotalSupply())
 
-    t.true(error instanceof InvalidTokenAddress)
+    t.true(error instanceof InvalidERC20TokenAddress)
     t.is(
         error.message,
         `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
@@ -273,7 +273,7 @@ test.serial('fetch ERC-20 token balance for address - fail token address does no
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(address))
 
-    t.true(error instanceof InvalidTokenAddress)
+    t.true(error instanceof InvalidERC20TokenAddress)
     t.is(
         error.message,
         `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
