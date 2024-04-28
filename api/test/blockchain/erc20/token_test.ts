@@ -45,7 +45,8 @@ const stubEthCall = (tokenAddress: string, encodedData: string, encodedResult: s
             [
                 'Content-Encoding', 'gzip',
                 'Content-Type', 'application/json',
-            ])
+            ]
+        )
 }
 
 //
