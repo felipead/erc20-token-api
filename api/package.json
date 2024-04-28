@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "rm -rf ./build",
-    "test": "tsc --build && ava",
+    "test": "tsc --build && npx dotenvx run --env-file=.env.TEST -- ava",
     "lint": "eslint . --ext .ts",
     "local-server": "npm run build && npx dotenvx run --env-file=.env.LOCAL -- node build/index.js"
   },
@@ -32,6 +32,7 @@
     "@typescript-eslint/parser": "^7.7.0",
     "ava": "^6.1.2",
     "eslint": "^8.57.0",
-    "graphqurl": "^1.0.2"
+    "graphqurl": "^1.0.2",
+    "nock": "^13.5.4"
   }
 }
