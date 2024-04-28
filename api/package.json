@@ -2,6 +2,8 @@
   "name": "blockchain-api",
   "version": "1.0.0",
   "description": "Blockchain API",
+  "author": "Felipe Dornelas <m@felipedornelas.com>",
+  "license": "MIT",
   "type": "module",
   "exports": "./index.js",
   "scripts": {
@@ -11,8 +13,14 @@
     "lint": "eslint . --ext .ts",
     "local-server": "npm run build && npx dotenvx run --env-file=.env.LOCAL -- node build/index.js"
   },
-  "author": "Felipe Dornelas <m@felipedornelas.com>",
-  "license": "MIT",
+  "ava": {
+    "files": [
+      "./build/test/**/*_test.js",
+      "!./build/test/**/*helpers.js"
+    ],
+    "concurrency": 5,
+    "failFast": true
+  },
   "dependencies": {
     "@graphql-tools/graphql-file-loader": "^8.0.1",
     "@graphql-tools/load": "^8.0.2",
