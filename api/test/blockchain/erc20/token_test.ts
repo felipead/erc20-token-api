@@ -1,6 +1,6 @@
 import test from 'ava'
 import nock from 'nock'
-import { AbiError, Web3 } from 'web3'
+import { Web3, AbiError, BaseWeb3Error, ERR_VALIDATION, ERR_ABI_ENCODING } from 'web3'
 import * as zlib from 'zlib'
 
 import * as config from '../../../src/config.js'
@@ -124,7 +124,7 @@ test.serial('fetch ERC-20 token name - fail token address does not exist', async
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchName())
 
-    t.true(error instanceof AbiError)
+    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
     t.is(
         error.message,
         `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
@@ -160,7 +160,7 @@ test.serial('fetch ERC-20 token symbol - fail token address does not exist', asy
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchSymbol())
 
-    t.true(error instanceof AbiError)
+    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
     t.is(
         error.message,
         `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
@@ -196,7 +196,7 @@ test.serial('fetch ERC-20 token decimals - fail token address does not exist', a
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchDecimals())
 
-    t.true(error instanceof AbiError)
+    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
     t.is(
         error.message,
         `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
@@ -232,7 +232,7 @@ test.serial('fetch ERC-20 token total supply - fail token address does not exist
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchTotalSupply())
 
-    t.true(error instanceof AbiError)
+    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
     t.is(
         error.message,
         `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
@@ -274,7 +274,7 @@ test.serial('fetch ERC-20 token balance for address - fail token address does no
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(address))
 
-    t.true(error instanceof AbiError)
+    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
     t.is(
         error.message,
         `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
@@ -304,4 +304,15 @@ test.serial('fetch ERC-20 token balance for address - fail address does not exis
         `invalid return value received from ERC-20 balanceOf() call`
     )
     t.true(scope.isDone())
+})
+
+test.serial('fetch ERC-20 token balance for address - fail invalid address format', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000001111'
+    const bogusAddress = '0xaaaaaaaaaaaa'
+
+    const token = new ERC20Token(tokenAddress)
+    const error = await t.throwsAsync(token.fetchBalanceOf(bogusAddress))
+
+    t.true((error instanceof BaseWeb3Error) && error.code == ERR_VALIDATION)
+    t.true(error.message.includes(`value "0xaaaaaaaaaaaa" at "/0" must pass "address" validation`))
 })
