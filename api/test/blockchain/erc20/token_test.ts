@@ -9,6 +9,11 @@ import { ERC20Token } from '../../../src/blockchain/erc20/token.js'
 const ENDPOINT = config.ETHEREUM_BLOCKCHAIN_ENDPOINT
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
+//
+// We are using nock [https://github.com/nock/nock] to stub HTTP requests to the JSON-RPC API.
+// When adding new test cases, you can try `nock.recorder.rec()`. It will record and output the requests to the stdout.
+//
+
 const stubEthCall = (tokenAddress: string, encodedData: string, encodedResult: string): nock.Scope => {
     return nock(ENDPOINT)
         .post('/', {
@@ -69,6 +74,12 @@ const encodeStringResult = (value: string): string => {
     return blocks.join('')
 }
 
+const encodeIntegerResult = (value: bigint): string => {
+    const hexEncoded = Web3.utils.numberToHex(value).slice(2)
+    const padded = hexEncoded.padStart(64, '0')
+    return `0x${padded}`
+}
+
 test('fetch ERC-20 token name', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTokenName = 'Zorreth'
@@ -84,7 +95,6 @@ test('fetch ERC-20 token name', async (t) => {
     t.true(scope.isDone())
 })
 
-
 test('fetch ERC-20 token symbol', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTokenSymbol = 'ZRETH'
@@ -97,5 +107,20 @@ test('fetch ERC-20 token symbol', async (t) => {
     const fetched = await token.fetchSymbol()
 
     t.is(fetched, expectedTokenSymbol)
+    t.true(scope.isDone())
+})
+
+test('fetch ERC-20 token decimals', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000001111'
+    const expectedDecimals = BigInt(5)
+
+    const encodedData = encodeFunctionData('decimals()')
+    const encodedResult = encodeIntegerResult(expectedDecimals)
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const fetched = await token.fetchDecimals()
+
+    t.is(fetched, Number(expectedDecimals))
     t.true(scope.isDone())
 })
