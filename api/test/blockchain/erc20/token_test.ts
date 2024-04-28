@@ -6,21 +6,34 @@ import * as zlib from 'node:zlib'
 import * as config from '../../../src/config.js'
 import { ERC20Token } from '../../../src/blockchain/erc20/token.js'
 
-//
-// We are using nock [https://github.com/nock/nock] to intercept, stub and replay the JSON-RPC requests
-// and responses with the go-ethereum HTTP backend. The benefits are reliable, reproducible tests that
-// exercise the full integration and helps ensure the API contract is respected.
-//
-// In order to record new requests, please use:
-//
-//     nock.recorder.rec()
-//
-// which will record the HTTP request/response and print it to the stdout. You can then copy it and adapt it
-// to stub the JSON-RPC API call in your test.
-//
-
 const ENDPOINT = config.ETHEREUM_BLOCKCHAIN_ENDPOINT
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+
+const stubEthCall = (tokenAddress: string, encodedData: string, encodedResult: string): nock.Scope => {
+    return nock(ENDPOINT)
+        .post('/', {
+            jsonrpc: '2.0',
+            id: UUID_REGEX,
+            method: 'eth_call',
+            params: [{
+                to: tokenAddress,
+                data: encodedData
+            },'latest']
+        })
+        .reply(200, (_, requestBody) => {
+                const id = (typeof requestBody === 'object' && requestBody['id']) as string
+                const response = {
+                    jsonrpc: '2.0',
+                    id: id,
+                    result: encodedResult
+                }
+                return zlib.gzipSync(JSON.stringify(response))
+            },
+            [
+                'Content-Encoding', 'gzip',
+                'Content-Type', 'application/json',
+            ])
+}
 
 //
 // from the Solidity docs [https://docs.soliditylang.org/en/develop/abi-spec.html#function-selector]:
@@ -58,38 +71,31 @@ const encodeStringResult = (value: string): string => {
 
 test('fetch ERC-20 token name', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
-    const functionData = encodeFunctionData('name()')
-
     const expectedTokenName = 'Zorreth'
-    const encodedResult = encodeStringResult(expectedTokenName)
 
-    const scope = nock(ENDPOINT)
-        .post('/', {
-            jsonrpc: '2.0',
-            id: UUID_REGEX,
-            method: 'eth_call',
-            params: [{
-                to: tokenAddress,
-                data: functionData
-            },'latest']
-        })
-        .reply(200, (_, requestBody) => {
-            const id = (typeof requestBody === 'object' && requestBody['id']) as string
-            const response = {
-                jsonrpc: '2.0',
-                id: id,
-                result: encodedResult
-            }
-            return zlib.gzipSync(JSON.stringify(response))
-        },
-        [
-            'Content-Encoding', 'gzip',
-            'Content-Type', 'application/json',
-        ])
+    const encodedData = encodeFunctionData('name()')
+    const encodedResult = encodeStringResult(expectedTokenName)
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
 
     const token = new ERC20Token(tokenAddress)
-    const name = await token.fetchName()
+    const fetched = await token.fetchName()
 
-    t.is(name, expectedTokenName)
+    t.is(fetched, expectedTokenName)
+    t.true(scope.isDone())
+})
+
+
+test('fetch ERC-20 token symbol', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000001111'
+    const expectedTokenSymbol = 'ZRETH'
+
+    const encodedData = encodeFunctionData('symbol()')
+    const encodedResult = encodeStringResult(expectedTokenSymbol)
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const fetched = await token.fetchSymbol()
+
+    t.is(fetched, expectedTokenSymbol)
     t.true(scope.isDone())
 })
