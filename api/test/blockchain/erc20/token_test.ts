@@ -65,7 +65,7 @@ const encodeFunctionSelector = (functionSignature: string): string => {
 
 const encodeAddressParameter = (address: string): string => {
     const sanitizedAddress = address.toLowerCase().slice(2) // removes 0x prefix
-    return sanitizedAddress.padStart(64, '0')
+    return sanitizedAddress.padStart(64, '0') // it must fit 32 bytes
 }
 
 const encodeStringResult = (value: string): string => {
