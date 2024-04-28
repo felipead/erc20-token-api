@@ -1,11 +1,14 @@
 import test from 'ava'
 import nock from 'nock'
-import { Web3, AbiError, BaseWeb3Error, ERR_VALIDATION, ERR_ABI_ENCODING } from 'web3'
+import { Web3 } from 'web3'
 import * as zlib from 'zlib'
 
 import * as config from '../../../src/config.js'
 import { ERC20Token } from '../../../src/blockchain/erc20/token.js'
-import { InvalidERC20CallReturnValueError } from '../../../src/blockchain/erc20/error.js'
+import {
+    InvalidAddressBalance, InvalidAddressFormat,
+    InvalidTokenAddress
+} from '../../../src/blockchain/erc20/error.js'
 
 const ENDPOINT = config.ETHEREUM_BLOCKCHAIN_ENDPOINT
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
@@ -124,13 +127,12 @@ test.serial('fetch ERC-20 token name - fail token address does not exist', async
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchName())
 
-    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
+    t.true(error instanceof InvalidTokenAddress)
     t.is(
         error.message,
-        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
-        `You might also see this error if you are not using the correct ABI for the ` +
-        `contract you are retrieving data from, requesting data from a block number ` +
-        `that does not exist, or querying a node which is not fully synced.`
+        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
+        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
+        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: name()`
     )
     t.true(scope.isDone())
 })
@@ -160,13 +162,12 @@ test.serial('fetch ERC-20 token symbol - fail token address does not exist', asy
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchSymbol())
 
-    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
+    t.true(error instanceof InvalidTokenAddress)
     t.is(
         error.message,
-        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
-        `You might also see this error if you are not using the correct ABI for the ` +
-        `contract you are retrieving data from, requesting data from a block number ` +
-        `that does not exist, or querying a node which is not fully synced.`
+        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
+        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
+        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: symbol()`
     )
     t.true(scope.isDone())
 })
@@ -196,13 +197,12 @@ test.serial('fetch ERC-20 token decimals - fail token address does not exist', a
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchDecimals())
 
-    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
+    t.true(error instanceof InvalidTokenAddress)
     t.is(
         error.message,
-        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
-        `You might also see this error if you are not using the correct ABI for the ` +
-        `contract you are retrieving data from, requesting data from a block number ` +
-        `that does not exist, or querying a node which is not fully synced.`
+        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
+        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
+        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: decimals()`
     )
     t.true(scope.isDone())
 })
@@ -232,13 +232,12 @@ test.serial('fetch ERC-20 token total supply - fail token address does not exist
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchTotalSupply())
 
-    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
+    t.true(error instanceof InvalidTokenAddress)
     t.is(
         error.message,
-        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
-        `You might also see this error if you are not using the correct ABI for the ` +
-        `contract you are retrieving data from, requesting data from a block number ` +
-        `that does not exist, or querying a node which is not fully synced.`
+        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
+        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
+        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: totalSupply()`
     )
     t.true(scope.isDone())
 })
@@ -274,13 +273,12 @@ test.serial('fetch ERC-20 token balance for address - fail token address does no
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(address))
 
-    t.true(error instanceof AbiError && error.code == ERR_ABI_ENCODING)
+    t.true(error instanceof InvalidTokenAddress)
     t.is(
         error.message,
-        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
-        `You might also see this error if you are not using the correct ABI for the ` +
-        `contract you are retrieving data from, requesting data from a block number ` +
-        `that does not exist, or querying a node which is not fully synced.`
+        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
+        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
+        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: balanceOf(address)`
     )
     t.true(scope.isDone())
 })
@@ -298,10 +296,13 @@ test.serial('fetch ERC-20 token balance for address - fail address does not exis
     const token = new ERC20Token(tokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(nonexistentAddress))
 
-    t.true(error instanceof InvalidERC20CallReturnValueError)
+    t.true(error instanceof InvalidAddressBalance)
     t.is(
         error.message,
-        `invalid return value received from ERC-20 balanceOf() call`
+        `The ERC-20 balanceOf(address) call result returned zero. This most likely means the address ` +
+        `does not exist, although it could also mean the address does not have any balance. ` +
+        `$token_address: 0x0000000000000000000000000000000000001111; $function_signature: balanceOf(address); ` +
+        `$address: 0x0000000000000000000000000000aaaaaaaaaaaa`
     )
     t.true(scope.isDone())
 })
@@ -313,6 +314,6 @@ test.serial('fetch ERC-20 token balance for address - fail invalid address forma
     const token = new ERC20Token(tokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(bogusAddress))
 
-    t.true((error instanceof BaseWeb3Error) && error.code == ERR_VALIDATION)
-    t.true(error.message.includes(`value "0xaaaaaaaaaaaa" at "/0" must pass "address" validation`))
+    t.true(error instanceof InvalidAddressFormat)
+    t.true(error.message.includes(`Invalid address format`))
 })

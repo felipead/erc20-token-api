@@ -1,8 +1,16 @@
-import { Contract, ContractAbi, Web3 } from 'web3'
+import { Web3 , Contract, ContractAbi, BaseWeb3Error, ERR_ABI_ENCODING, ERR_VALIDATION } from 'web3'
 
 import * as config from '../../config.js'
 import ERC20TokenABI from './abi.json' assert {type: 'json'}
-import { InvalidERC20CallReturnValueError } from './error.js'
+import {
+    BaseERC20Error,
+    InvalidAddressBalance,
+    InvalidAddressFormat,
+    InvalidTokenAddress,
+    InvalidTokenResult
+} from './error.js'
+import { UnknownError } from '../../error/common.js'
+
 
 const ENDPOINT = config.ETHEREUM_BLOCKCHAIN_ENDPOINT
 console.info(`using ${ENDPOINT} as the Ethereum provider API endpoint`)
@@ -12,70 +20,124 @@ const WEB3 = new Web3(PROVIDER)
 
 export class ERC20Token {
 
-    private internal: Contract<ContractAbi>
-
+    private contract: Contract<ContractAbi>
     public readonly address: string
 
     constructor(address: string) {
         this.address = address
-        this.internal = new WEB3.eth.Contract(ERC20TokenABI, address)
+        this.contract = new WEB3.eth.Contract(ERC20TokenABI, address)
+    }
+
+    private wrapError(functionSignature: string, error: Error | unknown): BaseERC20Error {
+        if (error instanceof BaseWeb3Error) {
+            switch (error.code) {
+                case ERR_ABI_ENCODING:
+                    return new InvalidTokenAddress(this.address, functionSignature, error)
+                case ERR_VALIDATION:
+                    if (error.message.includes('must pass "address" validation')) {
+                        return new InvalidAddressFormat(error)
+                    }
+            }
+        }
+
+        return new UnknownError(
+            `unexpected error when calling ERC-20 token function. ` +
+            `$function_signature: ${functionSignature}; $token_address: ${this.address}; $error: ${error}`,
+            error instanceof Error ? error : undefined
+        )
     }
 
     public async fetchName(): Promise<string> {
-        console.info(`fetching ERC-20 name() for token ${this.address} ...`)
+        const functionSignature = `name()`
+        console.info(`calling ERC-20 function ${functionSignature} for token ${this.address} ...`)
 
-        const name= await this.internal.methods.name().call()
-        if (name) {
-            return name.toString()
+        let result
+        try {
+            result = await this.contract.methods.name().call()
+        } catch (error: Error | unknown) {
+            throw this.wrapError(functionSignature, error)
         }
 
-        throw new InvalidERC20CallReturnValueError('name')
+        if (result && typeof result === 'string') {
+            return result
+        }
+
+        throw new InvalidTokenResult(this.address, functionSignature, result)
     }
 
     public async fetchSymbol(): Promise<string> {
-        console.info(`fetching ERC-20 symbol() for token ${this.address} ...`)
+        const functionSignature = `symbol()`
+        console.info(`calling ERC-20 function ${functionSignature} for token ${this.address} ...`)
 
-        const symbol= await this.internal.methods.symbol().call()
-        if (symbol) {
-            return symbol.toString()
+        let result
+        try {
+            result = await this.contract.methods.symbol().call()
+        } catch (error: Error | unknown) {
+            throw this.wrapError(functionSignature, error)
         }
 
-        throw new InvalidERC20CallReturnValueError('symbol')
+        if (result && typeof result === 'string') {
+            return result
+        }
+
+        throw new InvalidTokenResult(this.address, functionSignature, result)
     }
 
     public async fetchDecimals(): Promise<number> {
-        console.info(`fetching ERC-20 decimals() for token ${this.address} ...`)
+        const functionSignature = `decimals()`
+        console.info(`calling ERC-20 function ${functionSignature} for token ${this.address} ...`)
 
-        const decimals= await this.internal.methods.decimals().call()
-        if (decimals && typeof decimals === 'bigint') {
-            return Number(decimals)
+        let result
+        try {
+            result = await this.contract.methods.decimals().call()
+        } catch (error: Error | unknown) {
+            throw this.wrapError(functionSignature, error)
         }
 
-        console.error(`invalid ERC-20 return value received: ${typeof decimals} - ${decimals}`)
-        throw new InvalidERC20CallReturnValueError('decimals')
+        if (result && typeof result === 'bigint') {
+            return Number(result)
+        }
+
+        throw new InvalidTokenResult(this.address, functionSignature, result)
     }
 
     public async fetchTotalSupply(): Promise<bigint> {
-        console.info(`fetching ERC-20 totalSupply() for token ${this.address} ...`)
+        const functionSignature = `totalSupply()`
+        console.info(`calling ERC-20 function ${functionSignature} for token ${this.address} ...`)
 
-        const totalSupply= await this.internal.methods.totalSupply().call()
-        if (totalSupply && typeof totalSupply === 'bigint') {
-            return totalSupply
+        let result
+        try {
+            result = await this.contract.methods.totalSupply().call()
+        } catch (error: Error | unknown) {
+            throw this.wrapError(functionSignature, error)
         }
 
-        console.error(`invalid ERC-20 return value received: ${typeof totalSupply} - ${totalSupply}`)
-        throw new InvalidERC20CallReturnValueError('totalSupply')
+        if (result && typeof result === 'bigint') {
+            return result
+        }
+
+        throw new InvalidTokenResult(this.address, functionSignature, result)
     }
 
     public async fetchBalanceOf(address: string): Promise<bigint> {
-        console.info(`fetching ERC-20 balanceOf() for token ${this.address} and address ${address} ...`)
+        const functionSignature = `balanceOf(address)`
+        console.info(
+            `calling ERC-20 function ${functionSignature} for token ${this.address} and address ${address} ...`)
 
-        const balance = await this.internal.methods.balanceOf(address).call()
-        if (balance && typeof balance === 'bigint') {
-            return balance
+        let result
+        try {
+            result = await this.contract.methods.balanceOf(address).call()
+        } catch (error: Error | unknown) {
+            throw this.wrapError(functionSignature, error)
         }
 
-        console.error(`invalid ERC-20 return value received: ${typeof balance} - ${balance}`)
-        throw new InvalidERC20CallReturnValueError('balanceOf')
+        if (result != undefined && typeof result === 'bigint') {
+            if (result == BigInt(0)) {
+                throw new InvalidAddressBalance(this.address, functionSignature, address)
+            }
+            return result
+        }
+
+        throw new InvalidTokenResult(this.address, functionSignature, result)
     }
 }
