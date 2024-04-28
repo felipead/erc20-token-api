@@ -1,6 +1,6 @@
 import test from 'ava'
 import nock from 'nock'
-import { Web3 } from 'web3'
+import { AbiError, Web3 } from 'web3'
 import * as zlib from 'zlib'
 
 import * as config from '../../../src/config.js'
@@ -106,6 +106,27 @@ test('fetch ERC-20 token name', async (t) => {
     const fetched = await token.fetchName()
 
     t.is(fetched, expectedTokenName)
+    t.true(scope.isDone())
+})
+
+test('fetch ERC-20 token name - fail token address does not exist', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000002222'
+
+    const encodedData = encodeFunctionSelector('name()')
+    const encodedResult = '0x'
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const error = await t.throwsAsync(token.fetchName())
+
+    t.true(error instanceof AbiError)
+    t.is(
+        error.message,
+        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
+        `You might also see this error if you are not using the correct ABI for the ` +
+        `contract you are retrieving data from, requesting data from a block number ` +
+        `that does not exist, or querying a node which is not fully synced.`
+    )
     t.true(scope.isDone())
 })
 
