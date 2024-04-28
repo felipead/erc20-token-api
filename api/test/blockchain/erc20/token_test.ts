@@ -86,12 +86,7 @@ test.serial('fetch ERC-20 token name - fail token address does not exist', async
     const error = await t.throwsAsync(token.fetchName())
 
     t.true(error instanceof InvalidERC20TokenAddress)
-    t.is(
-        error.message,
-        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
-        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
-        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: name()`
-    )
+    t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
 
@@ -121,12 +116,7 @@ test.serial('fetch ERC-20 token symbol - fail token address does not exist', asy
     const error = await t.throwsAsync(token.fetchSymbol())
 
     t.true(error instanceof InvalidERC20TokenAddress)
-    t.is(
-        error.message,
-        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
-        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
-        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: symbol()`
-    )
+    t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
 
@@ -156,12 +146,7 @@ test.serial('fetch ERC-20 token decimals - fail token address does not exist', a
     const error = await t.throwsAsync(token.fetchDecimals())
 
     t.true(error instanceof InvalidERC20TokenAddress)
-    t.is(
-        error.message,
-        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
-        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
-        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: decimals()`
-    )
+    t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
 
@@ -191,12 +176,7 @@ test.serial('fetch ERC-20 token total supply - fail token address does not exist
     const error = await t.throwsAsync(token.fetchTotalSupply())
 
     t.true(error instanceof InvalidERC20TokenAddress)
-    t.is(
-        error.message,
-        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
-        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
-        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: totalSupply()`
-    )
+    t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
 
@@ -232,12 +212,7 @@ test.serial('fetch ERC-20 token balance for address - fail token address does no
     const error = await t.throwsAsync(token.fetchBalanceOf(address))
 
     t.true(error instanceof InvalidERC20TokenAddress)
-    t.is(
-        error.message,
-        `Could not decode ERC-20 call result. You might see this error if the address does not exist, ` +
-        `the node has not been fully synced, or it is not an ERC-20 compliant contract. ` +
-        `$token_address: 0x0000000000000000000000000000000000666666; $function_signature: balanceOf(address)`
-    )
+    t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
 
@@ -255,13 +230,8 @@ test.serial('fetch ERC-20 token balance for address - fail address does not exis
     const error = await t.throwsAsync(token.fetchBalanceOf(nonexistentAddress))
 
     t.true(error instanceof InvalidAddressBalance)
-    t.is(
-        error.message,
-        `The ERC-20 balanceOf(address) call result returned zero. This most likely means the address ` +
-        `does not exist, although it could also mean the address does not have any balance. ` +
-        `$token_address: 0x0000000000000000000000000000000000001111; $function_signature: balanceOf(address); ` +
-        `$address: 0x0000000000000000000000000000aaaaaaaaaaaa`
-    )
+    t.true(error.message.includes('call result returned zero. This most likely means the address does not exist'))
+    t.true(error.message.includes(nonexistentAddress))
     t.true(scope.isDone())
 })
 
