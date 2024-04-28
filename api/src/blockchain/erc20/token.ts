@@ -1,15 +1,24 @@
-import { Web3 , Contract, ContractAbi, BaseWeb3Error, ERR_ABI_ENCODING, ERR_VALIDATION } from 'web3'
+import {
+    Web3,
+    Contract,
+    ContractAbi,
+    BaseWeb3Error,
+    ERR_ABI_ENCODING,
+    ERR_VALIDATION,
+    ERR_INVALID_ADDRESS, InvalidAddressError
+} from 'web3'
 
 import * as config from '../../config.js'
 import ERC20TokenABI from './abi.json' assert {type: 'json'}
 import {
-    BaseERC20Error,
     InvalidAddressBalance,
     InvalidAddressFormat,
+    InvalidERC20Token,
     InvalidERC20TokenAddress,
     InvalidERC20CallResult
 } from './error.js'
 import { UnknownError } from '../../error/common.js'
+import { ApplicationError } from '../../error/base.js'
 
 
 const ENDPOINT = config.ETHEREUM_BLOCKCHAIN_ENDPOINT
@@ -25,23 +34,37 @@ export class ERC20Token {
 
     constructor(address: string) {
         this.address = address
-        this.contract = new WEB3.eth.Contract(ERC20TokenABI, address)
+
+        try {
+            this.contract = new WEB3.eth.Contract(ERC20TokenABI, address)
+        } catch (error: Error | unknown) {
+            if (error instanceof InvalidAddressError) {
+                throw new InvalidERC20TokenAddress(address, error)
+            }
+            throw new UnknownError(
+                `Unexpected error when creating contract. $token_address: ${address}`,
+                error instanceof Error ? error : undefined
+            )
+        }
     }
 
-    private wrapError(functionSignature: string, error: Error | unknown): BaseERC20Error {
+    private wrapError(functionSignature: string, error: Error | unknown): ApplicationError {
         if (error instanceof BaseWeb3Error) {
             switch (error.code) {
                 case ERR_ABI_ENCODING:
-                    return new InvalidERC20TokenAddress(this.address, functionSignature, error)
+                    return new InvalidERC20Token(this.address, functionSignature, error)
                 case ERR_VALIDATION:
                     if (error.message.includes('must pass "address" validation')) {
-                        return new InvalidAddressFormat(error)
+                        return new InvalidAddressFormat(this.address, functionSignature, error)
                     }
+                    break
+                case ERR_INVALID_ADDRESS:
+                    return new InvalidERC20TokenAddress(this.address, error)
             }
         }
 
         return new UnknownError(
-            `unexpected error when calling ERC-20 token function. ` +
+            `Unexpected error when calling ERC-20 token function. ` +
             `$function_signature: ${functionSignature}; $token_address: ${this.address}; $error: ${error}`,
             error instanceof Error ? error : undefined
         )

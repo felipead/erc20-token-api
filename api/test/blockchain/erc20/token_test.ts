@@ -8,7 +8,7 @@ import * as config from '../../../src/config.js'
 import { ERC20Token } from '../../../src/blockchain/erc20/token.js'
 import {
     InvalidAddressBalance, InvalidAddressFormat,
-    InvalidERC20TokenAddress
+    InvalidERC20Token, InvalidERC20TokenAddress
 } from '../../../src/blockchain/erc20/error.js'
 
 
@@ -60,6 +60,15 @@ test.afterEach.always(() => {
     nock.cleanAll()
 })
 
+test.serial('create ERC-20 token - fail invalid token address format', async (t) => {
+    const bogusTokenAddress = '0xaaaaaaaaaaaa'
+
+    const error = t.throws(() => new ERC20Token(bogusTokenAddress))
+
+    t.true(error instanceof InvalidERC20TokenAddress)
+    t.true(error.message.includes(`Invalid ERC-20 token address format - not an Ethereum address`))
+})
+
 test.serial('fetch ERC-20 token name', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTokenName = 'Zorreth'
@@ -85,7 +94,7 @@ test.serial('fetch ERC-20 token name - fail token address does not exist', async
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchName())
 
-    t.true(error instanceof InvalidERC20TokenAddress)
+    t.true(error instanceof InvalidERC20Token)
     t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
@@ -115,7 +124,7 @@ test.serial('fetch ERC-20 token symbol - fail token address does not exist', asy
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchSymbol())
 
-    t.true(error instanceof InvalidERC20TokenAddress)
+    t.true(error instanceof InvalidERC20Token)
     t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
@@ -145,7 +154,7 @@ test.serial('fetch ERC-20 token decimals - fail token address does not exist', a
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchDecimals())
 
-    t.true(error instanceof InvalidERC20TokenAddress)
+    t.true(error instanceof InvalidERC20Token)
     t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
@@ -175,7 +184,7 @@ test.serial('fetch ERC-20 token total supply - fail token address does not exist
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchTotalSupply())
 
-    t.true(error instanceof InvalidERC20TokenAddress)
+    t.true(error instanceof InvalidERC20Token)
     t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
@@ -211,7 +220,7 @@ test.serial('fetch ERC-20 token balance for address - fail token address does no
     const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(address))
 
-    t.true(error instanceof InvalidERC20TokenAddress)
+    t.true(error instanceof InvalidERC20Token)
     t.true(error.message.includes('address does not exist') && error.message.includes(nonexistentTokenAddress))
     t.true(scope.isDone())
 })
@@ -238,8 +247,6 @@ test.serial('fetch ERC-20 token balance for address - fail address does not exis
 test.serial('fetch ERC-20 token balance for address - fail invalid address format', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const bogusAddress = '0xaaaaaaaaaaaa'
-
-    // no stubbing is necessary here because address validation happens before calling the JSON-RPC API
 
     const token = new ERC20Token(tokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(bogusAddress))
