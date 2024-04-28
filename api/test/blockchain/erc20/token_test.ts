@@ -1,7 +1,7 @@
 import test from 'ava'
 import nock from 'nock'
 import { Web3 } from 'web3'
-import * as zlib from 'node:zlib'
+import * as zlib from 'zlib'
 
 import * as config from '../../../src/config.js'
 import { ERC20Token } from '../../../src/blockchain/erc20/token.js'
@@ -10,8 +10,15 @@ const ENDPOINT = config.ETHEREUM_BLOCKCHAIN_ENDPOINT
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 //
-// We are using nock [https://github.com/nock/nock] to stub HTTP requests to the JSON-RPC API.
-// When adding new test cases, you can try `nock.recorder.rec()`. It will record and output the requests to the stdout.
+// We are using nock [https://github.com/nock/nock] to stub HTTP responses from the JSON-RPC API. Stubbing APIs at the
+// protocol level has several benefits over using mocks. Most notably, we are exercising the JSON-RPC API boundaries
+// and ensuring the contract is respected. Doing so for the Ethereum JSON-RPC API can be challenging however,
+// because of how parameters are binary-encoded in request and responses.
+//
+// - When adding new test cases, you can try `nock.recorder.rec()`. It will record and output the requests to stdout.
+// - You can use the `Web3.utils.hexToNumber` or `Web3.utils.hexToUtf8` functions to decode the returned result.
+// - Please note, the response body from the JSON-RPC HTTP API is gzipped, so it must be unzipped first.
+// - Please use the helper functions below to programmatically stub the request, and encode input and output data.
 //
 
 const stubEthCall = (tokenAddress: string, encodedData: string, encodedResult: string): nock.Scope => {
@@ -122,5 +129,20 @@ test('fetch ERC-20 token decimals', async (t) => {
     const fetched = await token.fetchDecimals()
 
     t.is(fetched, Number(expectedDecimals))
+    t.true(scope.isDone())
+})
+
+test('fetch ERC-20 token total supply', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000001111'
+    const expectedTotalSupply = BigInt('18913469089218429310297331818')
+
+    const encodedData = encodeFunctionData('totalSupply()')
+    const encodedResult = encodeIntegerResult(expectedTotalSupply)
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const fetched = await token.fetchTotalSupply()
+
+    t.is(fetched, expectedTotalSupply)
     t.true(scope.isDone())
 })
