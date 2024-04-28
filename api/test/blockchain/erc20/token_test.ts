@@ -5,6 +5,7 @@ import * as zlib from 'zlib'
 
 import * as config from '../../../src/config.js'
 import { ERC20Token } from '../../../src/blockchain/erc20/token.js'
+import { InvalidERC20CallReturnValueError } from '../../../src/blockchain/erc20/error.js'
 
 const ENDPOINT = config.ETHEREUM_BLOCKCHAIN_ENDPOINT
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
@@ -94,7 +95,11 @@ const encodeIntegerResult = (value: bigint): string => {
     return `0x${padded}`
 }
 
-test('fetch ERC-20 token name', async (t) => {
+test.afterEach.always(() => {
+    nock.cleanAll()
+})
+
+test.serial('fetch ERC-20 token name', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTokenName = 'Zorreth'
 
@@ -109,8 +114,8 @@ test('fetch ERC-20 token name', async (t) => {
     t.true(scope.isDone())
 })
 
-test('fetch ERC-20 token name - fail token address does not exist', async (t) => {
-    const tokenAddress = '0x0000000000000000000000000000000000002222'
+test.serial('fetch ERC-20 token name - fail token address does not exist', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000666666'
 
     const encodedData = encodeFunctionSelector('name()')
     const encodedResult = '0x'
@@ -130,7 +135,7 @@ test('fetch ERC-20 token name - fail token address does not exist', async (t) =>
     t.true(scope.isDone())
 })
 
-test('fetch ERC-20 token symbol', async (t) => {
+test.serial('fetch ERC-20 token symbol', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTokenSymbol = 'ZRETH'
 
@@ -145,8 +150,8 @@ test('fetch ERC-20 token symbol', async (t) => {
     t.true(scope.isDone())
 })
 
-test('fetch ERC-20 token symbol - fail token address does not exist', async (t) => {
-    const tokenAddress = '0x0000000000000000000000000000000000002222'
+test.serial('fetch ERC-20 token symbol - fail token address does not exist', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000666666'
 
     const encodedData = encodeFunctionSelector('symbol()')
     const encodedResult = '0x'
@@ -166,7 +171,7 @@ test('fetch ERC-20 token symbol - fail token address does not exist', async (t) 
     t.true(scope.isDone())
 })
 
-test('fetch ERC-20 token decimals', async (t) => {
+test.serial('fetch ERC-20 token decimals', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedDecimals = BigInt(5)
 
@@ -181,7 +186,28 @@ test('fetch ERC-20 token decimals', async (t) => {
     t.true(scope.isDone())
 })
 
-test('fetch ERC-20 token total supply', async (t) => {
+test.serial('fetch ERC-20 token decimals - fail token address does not exist', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000666666'
+
+    const encodedData = encodeFunctionSelector('decimals()')
+    const encodedResult = '0x'
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const error = await t.throwsAsync(token.fetchDecimals())
+
+    t.true(error instanceof AbiError)
+    t.is(
+        error.message,
+        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
+        `You might also see this error if you are not using the correct ABI for the ` +
+        `contract you are retrieving data from, requesting data from a block number ` +
+        `that does not exist, or querying a node which is not fully synced.`
+    )
+    t.true(scope.isDone())
+})
+
+test.serial('fetch ERC-20 token total supply', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTotalSupply = BigInt('18913469089218429310297331818')
 
@@ -196,7 +222,28 @@ test('fetch ERC-20 token total supply', async (t) => {
     t.true(scope.isDone())
 })
 
-test('fetch ERC-20 token balance for address', async (t) => {
+test.serial('fetch ERC-20 token total supply - fail token address does not exist', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000666666'
+
+    const encodedData = encodeFunctionSelector('totalSupply()')
+    const encodedResult = '0x'
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const error = await t.throwsAsync(token.fetchTotalSupply())
+
+    t.true(error instanceof AbiError)
+    t.is(
+        error.message,
+        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
+        `You might also see this error if you are not using the correct ABI for the ` +
+        `contract you are retrieving data from, requesting data from a block number ` +
+        `that does not exist, or querying a node which is not fully synced.`
+    )
+    t.true(scope.isDone())
+})
+
+test.serial('fetch ERC-20 token balance for address', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const address = '0x35579dD4fa266ABE6380868fcaE65CA2017a6806'
     const expectedBalance = BigInt('734445571472928886574449575')
@@ -211,5 +258,50 @@ test('fetch ERC-20 token balance for address', async (t) => {
     const fetched = await token.fetchBalanceOf(address)
 
     t.is(fetched, expectedBalance)
+    t.true(scope.isDone())
+})
+
+test.serial('fetch ERC-20 token balance for address - fail token address does not exist', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000666666'
+    const address = '0x35579dD4fa266ABE6380868fcaE65CA2017a6806'
+
+    const functionSelector = encodeFunctionSelector('balanceOf(address)')
+    const encodedData = functionSelector + encodeAddressParameter(address)
+
+    const encodedResult = '0x'
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const error = await t.throwsAsync(token.fetchBalanceOf(address))
+
+    t.true(error instanceof AbiError)
+    t.is(
+        error.message,
+        `Parameter decoding error: Returned values aren't valid, did it run Out of Gas? ` +
+        `You might also see this error if you are not using the correct ABI for the ` +
+        `contract you are retrieving data from, requesting data from a block number ` +
+        `that does not exist, or querying a node which is not fully synced.`
+    )
+    t.true(scope.isDone())
+})
+
+test.serial('fetch ERC-20 token balance for address - fail address does not exist', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000001111'
+    const nonexistentAddress = '0x0000000000000000000000000000aaaaaaaaaaaa'
+
+    const functionSelector = encodeFunctionSelector('balanceOf(address)')
+    const encodedData = functionSelector + encodeAddressParameter(nonexistentAddress)
+
+    const encodedResult = '0x0000000000000000000000000000000000000000000000000000000000000000'
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const error = await t.throwsAsync(token.fetchBalanceOf(nonexistentAddress))
+
+    t.true(error instanceof InvalidERC20CallReturnValueError)
+    t.is(
+        error.message,
+        `invalid return value received from ERC-20 balanceOf() call`
+    )
     t.true(scope.isDone())
 })
