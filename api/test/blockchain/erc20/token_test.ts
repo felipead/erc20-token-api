@@ -115,13 +115,13 @@ test.serial('fetch ERC-20 token name', async (t) => {
 })
 
 test.serial('fetch ERC-20 token name - fail token address does not exist', async (t) => {
-    const tokenAddress = '0x0000000000000000000000000000000000666666'
+    const nonexistentTokenAddress = '0x0000000000000000000000000000000000666666'
 
     const encodedData = encodeFunctionSelector('name()')
     const encodedResult = '0x'
-    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+    const scope = stubEthCall(nonexistentTokenAddress, encodedData, encodedResult)
 
-    const token = new ERC20Token(tokenAddress)
+    const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchName())
 
     t.true(error instanceof AbiError)
@@ -151,13 +151,13 @@ test.serial('fetch ERC-20 token symbol', async (t) => {
 })
 
 test.serial('fetch ERC-20 token symbol - fail token address does not exist', async (t) => {
-    const tokenAddress = '0x0000000000000000000000000000000000666666'
+    const nonexistentTokenAddress = '0x0000000000000000000000000000000000666666'
 
     const encodedData = encodeFunctionSelector('symbol()')
     const encodedResult = '0x'
-    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+    const scope = stubEthCall(nonexistentTokenAddress, encodedData, encodedResult)
 
-    const token = new ERC20Token(tokenAddress)
+    const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchSymbol())
 
     t.true(error instanceof AbiError)
@@ -187,13 +187,13 @@ test.serial('fetch ERC-20 token decimals', async (t) => {
 })
 
 test.serial('fetch ERC-20 token decimals - fail token address does not exist', async (t) => {
-    const tokenAddress = '0x0000000000000000000000000000000000666666'
+    const nonexistentTokenAddress = '0x0000000000000000000000000000000000666666'
 
     const encodedData = encodeFunctionSelector('decimals()')
     const encodedResult = '0x'
-    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+    const scope = stubEthCall(nonexistentTokenAddress, encodedData, encodedResult)
 
-    const token = new ERC20Token(tokenAddress)
+    const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchDecimals())
 
     t.true(error instanceof AbiError)
@@ -223,13 +223,13 @@ test.serial('fetch ERC-20 token total supply', async (t) => {
 })
 
 test.serial('fetch ERC-20 token total supply - fail token address does not exist', async (t) => {
-    const tokenAddress = '0x0000000000000000000000000000000000666666'
+    const nonexistentTokenAddress = '0x0000000000000000000000000000000000666666'
 
     const encodedData = encodeFunctionSelector('totalSupply()')
     const encodedResult = '0x'
-    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+    const scope = stubEthCall(nonexistentTokenAddress, encodedData, encodedResult)
 
-    const token = new ERC20Token(tokenAddress)
+    const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchTotalSupply())
 
     t.true(error instanceof AbiError)
@@ -262,16 +262,16 @@ test.serial('fetch ERC-20 token balance for address', async (t) => {
 })
 
 test.serial('fetch ERC-20 token balance for address - fail token address does not exist', async (t) => {
-    const tokenAddress = '0x0000000000000000000000000000000000666666'
+    const nonexistentTokenAddress = '0x0000000000000000000000000000000000666666'
     const address = '0x35579dD4fa266ABE6380868fcaE65CA2017a6806'
 
     const functionSelector = encodeFunctionSelector('balanceOf(address)')
     const encodedData = functionSelector + encodeAddressParameter(address)
 
     const encodedResult = '0x'
-    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+    const scope = stubEthCall(nonexistentTokenAddress, encodedData, encodedResult)
 
-    const token = new ERC20Token(tokenAddress)
+    const token = new ERC20Token(nonexistentTokenAddress)
     const error = await t.throwsAsync(token.fetchBalanceOf(address))
 
     t.true(error instanceof AbiError)

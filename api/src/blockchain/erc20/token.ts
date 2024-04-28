@@ -51,7 +51,7 @@ export class ERC20Token {
             return Number(decimals)
         }
 
-        console.error(`invalid ERC-20 return value received: ${decimals}`)
+        console.error(`invalid ERC-20 return value received: ${typeof decimals} - ${decimals}`)
         throw new InvalidERC20CallReturnValueError('decimals')
     }
 
@@ -63,7 +63,7 @@ export class ERC20Token {
             return totalSupply
         }
 
-        console.error(`invalid ERC-20 return value received: ${totalSupply}`)
+        console.error(`invalid ERC-20 return value received: ${typeof totalSupply} - ${totalSupply}`)
         throw new InvalidERC20CallReturnValueError('totalSupply')
     }
 
@@ -75,7 +75,7 @@ export class ERC20Token {
             return balance
         }
 
-        console.error(`invalid ERC-20 return value received: ${balance}`)
+        console.error(`invalid ERC-20 return value received: ${typeof balance} - ${balance}`)
         throw new InvalidERC20CallReturnValueError('balanceOf')
     }
 }
