@@ -12,8 +12,9 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 //
 // We are using nock [https://github.com/nock/nock] to stub HTTP responses from the JSON-RPC API. Stubbing APIs at the
 // protocol level has several benefits over using mocks. Most notably, we are exercising the JSON-RPC API boundaries
-// and ensuring the contract is respected. Doing so for the Ethereum JSON-RPC API can be challenging however,
-// because of how parameters are binary-encoded in request and responses.
+// and ensuring the contract is respected. It is also easier to capture and reproduce errors, specially at the
+// transport level. Stubbing Ethereum JSON-RPC API calls can be challenging however, because of how parameters are
+// binary-encoded in request and responses.
 //
 // - When adding new test cases, you can try `nock.recorder.rec()`. It will record and output the requests to stdout.
 // - You can use the `Web3.utils.hexToNumber` or `Web3.utils.hexToUtf8` functions to decode the returned result.
@@ -55,10 +56,15 @@ const stubEthCall = (tokenAddress: string, encodedData: string, encodedResult: s
 //  signature is defined as the canonical expression of the basic prototype, i.e. the function name with the
 //  parenthesised list of parameter types. Parameter types are split by a single comma - no spaces are used.
 //
-const encodeFunctionData = (signature: string): string => {
-    const sha3 = Web3.utils.sha3(signature)!
+const encodeFunctionSelector = (functionSignature: string): string => {
+    const sha3 = Web3.utils.sha3(functionSignature)!
     const first4bytes = Web3.utils.hexToBytes(sha3).slice(0, 4)
     return Web3.utils.bytesToHex(first4bytes)
+}
+
+const encodeAddressParameter = (address: string): string => {
+    const sanitizedAddress = address.toLowerCase().slice(2) // removes 0x prefix
+    return sanitizedAddress.padStart(64, '0')
 }
 
 const encodeStringResult = (value: string): string => {
@@ -91,7 +97,7 @@ test('fetch ERC-20 token name', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTokenName = 'Zorreth'
 
-    const encodedData = encodeFunctionData('name()')
+    const encodedData = encodeFunctionSelector('name()')
     const encodedResult = encodeStringResult(expectedTokenName)
     const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
 
@@ -106,7 +112,7 @@ test('fetch ERC-20 token symbol', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTokenSymbol = 'ZRETH'
 
-    const encodedData = encodeFunctionData('symbol()')
+    const encodedData = encodeFunctionSelector('symbol()')
     const encodedResult = encodeStringResult(expectedTokenSymbol)
     const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
 
@@ -121,7 +127,7 @@ test('fetch ERC-20 token decimals', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedDecimals = BigInt(5)
 
-    const encodedData = encodeFunctionData('decimals()')
+    const encodedData = encodeFunctionSelector('decimals()')
     const encodedResult = encodeIntegerResult(expectedDecimals)
     const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
 
@@ -136,7 +142,7 @@ test('fetch ERC-20 token total supply', async (t) => {
     const tokenAddress = '0x0000000000000000000000000000000000001111'
     const expectedTotalSupply = BigInt('18913469089218429310297331818')
 
-    const encodedData = encodeFunctionData('totalSupply()')
+    const encodedData = encodeFunctionSelector('totalSupply()')
     const encodedResult = encodeIntegerResult(expectedTotalSupply)
     const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
 
@@ -144,5 +150,23 @@ test('fetch ERC-20 token total supply', async (t) => {
     const fetched = await token.fetchTotalSupply()
 
     t.is(fetched, expectedTotalSupply)
+    t.true(scope.isDone())
+})
+
+test('fetch ERC-20 token balance for address', async (t) => {
+    const tokenAddress = '0x0000000000000000000000000000000000001111'
+    const address = '0x35579dD4fa266ABE6380868fcaE65CA2017a6806'
+    const expectedBalance = BigInt('734445571472928886574449575')
+
+    const functionSelector = encodeFunctionSelector('balanceOf(address)')
+    const encodedData = functionSelector + encodeAddressParameter(address)
+
+    const encodedResult = encodeIntegerResult(expectedBalance)
+    const scope = stubEthCall(tokenAddress, encodedData, encodedResult)
+
+    const token = new ERC20Token(tokenAddress)
+    const fetched = await token.fetchBalanceOf(address)
+
+    t.is(fetched, expectedBalance)
     t.true(scope.isDone())
 })
