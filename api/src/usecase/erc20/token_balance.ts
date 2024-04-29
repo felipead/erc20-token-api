@@ -1,14 +1,14 @@
 import { TokenBalance, TokenInfo } from '../../model/erc20.js'
 import { ERC20Token } from '../../blockchain/erc20/token.js'
 import { tokenBalanceToHumanReadable } from '../../domain/erc20/balance.js'
-import { fetchInfoFromTokenObject } from './token_info.js'
+import { FetchTokenInfo } from './token_info.js'
 
 export const fetchTokenBalances = async (tokenAddress: string, addresses: Array<string>):
     Promise<Array<TokenBalance>> => {
     console.log(`fetching ERC-20 balances for token ${tokenAddress} and ${addresses.length} addresses ...`)
 
     const token = new ERC20Token(tokenAddress)
-    const tokenInfo = await fetchInfoFromTokenObject(token)
+    const tokenInfo = await new FetchTokenInfo(token).execute()
 
     const promises = addresses.map((i) => {
         return fetchSingleTokenBalance(token, tokenInfo, i)
