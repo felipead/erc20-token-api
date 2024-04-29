@@ -6,3 +6,9 @@ export class UnknownError extends BaseError {
         super(ErrorType.Unknown, msg, innerError)
     }
 }
+
+export class InvalidArgument extends BaseError {
+    constructor(msg: string, innerError?: Error) {
+        super(ErrorType.InvalidArgument, msg, innerError)
+    }
+}

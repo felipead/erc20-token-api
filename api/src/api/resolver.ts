@@ -1,6 +1,6 @@
 import { TokenBalanceRequest, TokenInfoRequest } from './request.js'
 import { FetchTokenInfo } from '../usecase/erc20/token_info.js'
-import { fetchTokenBalances } from '../usecase/erc20/token_balance.js'
+import { FetchTokenBalances } from '../usecase/erc20/token_balances.js'
 import { TokenBalance, TokenInfo } from '../model/erc20.js'
 
 export const API_RESOLVER = {
@@ -9,6 +9,6 @@ export const API_RESOLVER = {
     },
 
     async erc20_token_balances(req: TokenBalanceRequest): Promise<Array<TokenBalance>> {
-        return await fetchTokenBalances(req.token_address, req.addresses)
+        return await FetchTokenBalances.build(req.token_address).execute(req.addresses)
     },
 }
