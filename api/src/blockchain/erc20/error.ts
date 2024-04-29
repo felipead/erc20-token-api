@@ -53,7 +53,7 @@ export class InvalidAddressFormat extends BaseERC20Error {
     constructor(tokenAddress: string, functionSignature: string, innerError?: Error) {
         const msg = (
             `Invalid address format as an input to a ERC-20 function call. ` +
-            `$token_address: ${tokenAddress}; $function_signature: ${functionSignature}`
+            `$token_address: ${tokenAddress}; $function_signature: ${functionSignature}; $error: ${innerError}`
         )
         super(ErrorType.InvalidArgument, msg, innerError)
     }

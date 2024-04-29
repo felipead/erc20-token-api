@@ -25,6 +25,12 @@ export class FetchTokenBalances {
         const tokenInfo = await new FetchTokenInfo(this.token).execute()
 
         const promises = addresses.map(i => this.fetchSingleTokenBalance(tokenInfo, i))
+
+        //
+        // right now, if fetching balance for one address fails, the entire request is aborted.
+        // this could be improved - for example, return partial results.
+        //
+
         return await Promise.all(promises)
     }
 
