@@ -1,9 +1,6 @@
 #!/bin/sh
 set -e
 
-echo "----------- RELEASE THE KRAKEN -----------"
-echo
-
 # The processes below should be managed by supervisord, which will help ensure
 # that if any of them restarts the container will remain operational
 # See: http://supervisord.org

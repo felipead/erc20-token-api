@@ -1,6 +1,6 @@
 # EthZ - Tech Assignment
 
-At Kraken we engage with a wide variety of blockchains. To ensure efficiency, we aim to standardize and optimize interfacing with various blockchain ecosystems.\
+We engage with a wide variety of blockchains. To ensure efficiency, we aim to standardize and optimize interfacing with various blockchain ecosystems.\
 This assignment tests your skills in setting up blockchain nodes and creating APIs for blockchain interactions.
 
 ## Instructions
